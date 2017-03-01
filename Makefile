@@ -22,7 +22,7 @@ default: $(GIT_HOOKS) computepi.o
 .PHONY: clean default
 
 %.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@ 
+	$(CC) -c $(CFLAGS) $< -o $@
 
 check: default
 	time ./time_test_baseline
@@ -32,10 +32,13 @@ check: default
 	time ./time_test_avxunroll
 
 gencsv: default
-	for i in `seq 100 5000 25000`; do \
+	for i in `seq 100 5000 100000`; do \
 		printf "%d," $$i;\
 		./benchmark_clock_gettime $$i; \
-	done > result_clock_gettime.csv	
+	done > result_clock_gettime.csv
 
 clean:
 	rm -f $(EXECUTABLE) *.o *.s result_clock_gettime.csv
+
+plot: result_clock_gettime.csv
+	gnuplot scripts/runtime.gp
